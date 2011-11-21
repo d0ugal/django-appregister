@@ -1,0 +1,11 @@
+docs/_build/*
+build
+*CACHE*
+dist
+MANIFEST
+*.pyc
+*.egg-info
+.coverage
+*.egg
+Vagrantfile
+tests/.tox/
