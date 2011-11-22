@@ -7,6 +7,10 @@ class AppRegisterException(Exception):
     pass
 
 
+class ImproperlyConfigured(Exception):
+    pass
+
+
 class InvalidOperation(AppRegisterException):
     pass
 
@@ -54,3 +58,35 @@ class BaseRegistry(object):
 
 class Registry(BaseRegistry):
     pass
+
+
+class AutoRegistery(Registry):
+
+    def meta(self):
+
+        shared = {'me': self, }
+
+        class RegistryMetaClass(type):
+
+            def __new__(cls, name, bases, attrs):
+
+                super_cls = super(RegistryMetaClass, cls).__new__(cls, name, bases, attrs)
+
+                # If its the base class - skip it, we don't need to register
+                # it or validate its attributes.
+                if name == "BaseRegistryMixin" or name == shared['me'].base.__name__:
+                    return super_cls
+
+                shared['me'].register(super_cls)
+
+                return super_cls
+
+        return RegistryMetaClass
+
+    def mixin(self):
+
+        class BaseRegistryMixin(object):
+
+            __metaclass__ = self.meta()
+
+        return BaseRegistryMixin
