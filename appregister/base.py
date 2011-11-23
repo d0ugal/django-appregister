@@ -28,20 +28,6 @@ class BaseRegistry(object):
     def __init__(self):
         self._registry = set()
 
-    def register(self, obj):
-
-        if not issubclass(obj, self.base):
-            raise InvalidOperation("Object '%s' is not a '%s'" % (obj, self.base))
-
-        if obj in self._registry:
-            raise AlreadyRegistered("Object '%s' has already been registered" % obj)
-
-        self._registry.add(obj)
-
-    def unregister(self, obj):
-
-        self._registry.remove(obj)
-
     def all(self):
         return self._registry
 
@@ -57,36 +43,17 @@ class BaseRegistry(object):
 
 
 class Registry(BaseRegistry):
-    pass
 
+    def register(self, obj):
 
-class AutoRegistery(Registry):
+        if not issubclass(obj, self.base):
+            raise InvalidOperation("Object '%s' is not a '%s'" % (obj, self.base))
 
-    def meta(self):
+        if obj in self._registry:
+            raise AlreadyRegistered("Object '%s' has already been registered" % obj)
 
-        shared = {'me': self, }
+        self._registry.add(obj)
 
-        class RegistryMetaClass(type):
+    def unregister(self, obj):
 
-            def __new__(cls, name, bases, attrs):
-
-                super_cls = super(RegistryMetaClass, cls).__new__(cls, name, bases, attrs)
-
-                # If its the base class - skip it, we don't need to register
-                # it or validate its attributes.
-                if name == "BaseRegistryMixin" or name == shared['me'].base.__name__:
-                    return super_cls
-
-                shared['me'].register(super_cls)
-
-                return super_cls
-
-        return RegistryMetaClass
-
-    def mixin(self):
-
-        class BaseRegistryMixin(object):
-
-            __metaclass__ = self.meta()
-
-        return BaseRegistryMixin
+        self._registry.remove(obj)
