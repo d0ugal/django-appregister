@@ -19,10 +19,6 @@ class AlreadyRegistered(AppRegisterException):
     pass
 
 
-class NotRegistered(AppRegisterException):
-    pass
-
-
 class BaseRegistry(object):
 
     def __init__(self):
@@ -31,15 +27,21 @@ class BaseRegistry(object):
     def all(self):
         return self._registry
 
-    def autodiscover(self):
+    def autodiscover(self, module=None):
+
+        if not module:
+            module = self.discovermodule
 
         for app in settings.INSTALLED_APPS:
             try:
-                import_module(".registry", app)
+                import_module(".%s" % module, app)
             except ImportError:
-                if module_has_submodule(import_module(app), "fixture_gen"):
+                if module_has_submodule(import_module(app), module):
                     raise
                 continue
+
+    def clear(self):
+        self._registry = set()
 
 
 class Registry(BaseRegistry):

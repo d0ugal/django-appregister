@@ -2,17 +2,15 @@ from django.db import models
 from appregister.base import Registry
 
 
-class BaseQuestion(models.Model):
-
-    class Meta:
-        proxy = True
-
-
-class BooleanQuestion(BaseQuestion):
+class Question(models.Model):
     pass
 
 
-class MultipleChoiceQuestion(BaseQuestion):
+class BooleanQuestion(Question):
+    pass
+
+
+class MultipleChoiceQuestion(Question):
     pass
 
 
@@ -21,7 +19,7 @@ class MultipleChoiceQuestion(BaseQuestion):
 
 class QuestionRegistry(Registry):
 
-    base = BaseQuestion
+    base = Question
     discovermodule = 'questions'
 
 registry = QuestionRegistry()
