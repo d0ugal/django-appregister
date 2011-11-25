@@ -103,7 +103,7 @@ def find_package_data(
 
 
 setup(
-    name="appregister",
+    name="django-appregister",
     version=":versiontools:appregister:",
     url='http://appregsiter.readthedocs.org/',
     license='MIT',

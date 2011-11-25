@@ -3,7 +3,7 @@ from django.utils import unittest
 import sys
 
 
-class ResolverTestCase(TestCase):
+class RegistryProcessTestCase(TestCase):
 
     def setUp(self):
         """
@@ -103,6 +103,95 @@ class ResolverTestCase(TestCase):
         with self.assertRaises(KeyError):
             registry.unregister(MyQuestion4)
 
+    def test_doesnt_contain_base(self):
+        """
+        Test the base class isn't registered.
+        """
+
+        from test_appregister.models import Question, registry
+
+        self.assertEqual(registry.all(), set())
+
+        class MyQuestion3(Question):
+            pass
+
+        registry.register(MyQuestion3)
+
+        self.assertEqual(registry.all(), set([MyQuestion3, ]))
+
+
+class RegistryDefinitionTestCase(TestCase):
+
+    def setUp(self):
+        """
+        Start with a clean registry for each test.
+        """
+
+        from test_appregister import models
+        models.registry = models.QuestionRegistry()
+
+    def test_basic_registry(self):
+
+        from appregister import Registry
+        from appregister.base import InvalidOperation
+        from test_appregister.models import Question
+
+        class MyRegistry(Registry):
+            base = Question
+
+        registry = MyRegistry()
+
+        # Test the registry allows a valid registration and block an invalid.
+        class MySubClass(Question):
+            pass
+
+        registry.register(MySubClass)
+
+        class MyObject(object):
+            pass
+
+        with self.assertRaises(InvalidOperation):
+            registry.register(MyObject)
+
+    def test_dotted_path_base(self):
+        """
+        Test defining a base for the registry as a dotted path to avoid the
+        circular import problem.
+        """
+
+        from appregister import Registry
+        from appregister.base import InvalidOperation
+
+        class MyRegistry(Registry):
+            base = 'test_appregister.models.Question'
+
+        registry = MyRegistry()
+
+        from test_appregister.models import Question
+
+        # Test the registry allows a valid registration and block an invalid.
+        class MySubClass(Question):
+            pass
+
+        registry.register(MySubClass)
+
+        class MyObject(object):
+            pass
+
+        with self.assertRaises(InvalidOperation):
+            registry.register(MyObject)
+
+
+class AutodiscoverTestCase(TestCase):
+
+    def setUp(self):
+        """
+        Start with a clean registry for each test.
+        """
+
+        from test_appregister import models
+        models.registry = models.QuestionRegistry()
+
     def test_autodiscover(self):
         """
         Test a basic autodiscover to find all the registered items in each
@@ -139,46 +228,3 @@ class ResolverTestCase(TestCase):
 
         with self.assertRaises(ImportError):
             registry.autodiscover('questions_error')
-
-    def test_doesnt_contain_base(self):
-        """
-        Test the base class isn't registered.
-        """
-
-        from test_appregister.models import Question, registry
-
-        self.assertEqual(registry.all(), set())
-
-        class MyQuestion3(Question):
-            pass
-
-        registry.register(MyQuestion3)
-
-        self.assertEqual(registry.all(), set([MyQuestion3, ]))
-
-    def test_dotted_path_base(self):
-        """
-        Test defining a base for the registry as a dotted path to avoid the
-        circular import problem.
-        """
-
-        from appregister.base import Registry, InvalidOperation
-
-        class MyRegistry(Registry):
-            base = 'test_appregister.models.Question'
-
-        registry = MyRegistry()
-
-        from test_appregister.models import Question
-
-        # Test the registry allows a valid registration and block an invalid.
-        class MySubClass(Question):
-            pass
-
-        registry.register(MySubClass)
-
-        class MyObject(object):
-            pass
-
-        with self.assertRaises(InvalidOperation):
-            registry.register(MyObject)
