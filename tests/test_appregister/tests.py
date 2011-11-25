@@ -155,3 +155,30 @@ class ResolverTestCase(TestCase):
         registry.register(MyQuestion3)
 
         self.assertEqual(registry.all(), set([MyQuestion3, ]))
+
+    def test_dotted_path_base(self):
+        """
+        Test defining a base for the registry as a dotted path to avoid the
+        circular import problem.
+        """
+
+        from appregister.base import Registry, InvalidOperation
+
+        class MyRegistry(Registry):
+            base = 'test_appregister.models.Question'
+
+        registry = MyRegistry()
+
+        from test_appregister.models import Question
+
+        # Test the registry allows a valid registration and block an invalid.
+        class MySubClass(Question):
+            pass
+
+        registry.register(MySubClass)
+
+        class MyObject(object):
+            pass
+
+        with self.assertRaises(InvalidOperation):
+            registry.register(MyObject)

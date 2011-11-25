@@ -1,5 +1,6 @@
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
+from django.core.urlresolvers import get_callable
 from django.conf import settings
 
 
@@ -19,10 +20,28 @@ class AlreadyRegistered(AppRegisterException):
     pass
 
 
+class ClassDoesNotExist(AppRegisterException):
+    pass
+
+
 class BaseRegistry(object):
 
     def __init__(self):
         self._registry = set()
+
+        if not callable(self.base):
+            self.base_str = self.base
+            self.base = None
+
+    def get_bases(self):
+        if self.base is not None:
+            return self.base
+
+        self.base = get_callable(self.base_str)
+        return self.base
+
+    def get_class(self, class_):
+        return get_callable(class_)
 
     def all(self):
         return self._registry
@@ -46,19 +65,19 @@ class BaseRegistry(object):
 
 class Registry(BaseRegistry):
 
-    def register(self, cls):
+    def register(self, class_):
 
-        if not issubclass(cls, self.base):
-            raise InvalidOperation("Object '%s' is not a '%s'" % (cls, self.base))
+        if not issubclass(class_, self.get_bases()):
+            raise InvalidOperation("Object '%s' is not a '%s'" % (class_, self.base))
 
-        if cls in self._registry:
-            raise AlreadyRegistered("Object '%s' has already been registered" % cls)
+        if class_ in self._registry:
+            raise AlreadyRegistered("Object '%s' has already been registered" % class_)
 
-        self._registry.add(cls)
+        self._registry.add(class_)
 
         # Return the original class to allow this method to be used as a
         # class based decorator.
-        return cls
+        return class_
 
     def unregister(self, obj):
 
