@@ -46,15 +46,19 @@ class BaseRegistry(object):
 
 class Registry(BaseRegistry):
 
-    def register(self, obj):
+    def register(self, cls):
 
-        if not issubclass(obj, self.base):
-            raise InvalidOperation("Object '%s' is not a '%s'" % (obj, self.base))
+        if not issubclass(cls, self.base):
+            raise InvalidOperation("Object '%s' is not a '%s'" % (cls, self.base))
 
-        if obj in self._registry:
-            raise AlreadyRegistered("Object '%s' has already been registered" % obj)
+        if cls in self._registry:
+            raise AlreadyRegistered("Object '%s' has already been registered" % cls)
 
-        self._registry.add(obj)
+        self._registry.add(cls)
+
+        # Return the original class to allow this method to be used as a
+        # class based decorator.
+        return cls
 
     def unregister(self, obj):
 

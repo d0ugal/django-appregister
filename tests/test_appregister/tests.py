@@ -1,4 +1,6 @@
 from django.test import TestCase
+from django.utils import unittest
+import sys
 
 
 class ResolverTestCase(TestCase):
@@ -36,6 +38,21 @@ class ResolverTestCase(TestCase):
 
         with self.assertRaises(InvalidOperation):
             registry.register(NonSubclass)
+
+    @unittest.skipIf(sys.version_info < (2, 6),
+                     "Class decorators now supported in earlier than Python 2.6")
+    def test_decorator_register(self):
+        """
+        Test trying registering a class with a decorator.
+        """
+
+        from test_appregister.models import Question, registry
+
+        @registry.register
+        class MyQuestion(Question):
+            pass
+
+        self.assertIn(MyQuestion, registry.all())
 
     def test_already_registered(self):
         """
