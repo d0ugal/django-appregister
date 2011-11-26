@@ -1,9 +1,8 @@
-from django.test import TestCase
 from django.utils import unittest
 import sys
 
 
-class RegistryProcessTestCase(TestCase):
+class RegistryProcessTestCase(unittest.TestCase):
 
     def setUp(self):
         """
@@ -120,7 +119,35 @@ class RegistryProcessTestCase(TestCase):
         self.assertEqual(registry.all(), set([MyQuestion3, ]))
 
 
-class RegistryDefinitionTestCase(TestCase):
+class NamedRegistryTestCase(unittest.TestCase):
+
+    def test_basic_registry(self):
+
+        from appregister import NamedRegistry
+        from appregister.base import InvalidOperation
+        from test_appregister.models import Question
+
+        class MyRegistry(NamedRegistry):
+            base = Question
+
+        registry = MyRegistry()
+
+        # Test the registry allows a valid registration and block an invalid.
+        class MyTestSubClass(Question):
+            pass
+
+        registry.register('first', MyTestSubClass)
+
+        class MyObject(object):
+            pass
+
+        with self.assertRaises(InvalidOperation):
+            registry.register('invalid', MyObject)
+
+        registry.unregister('first')
+
+
+class RegistryDefinitionTestCase(unittest.TestCase):
 
     def setUp(self):
         """
@@ -182,7 +209,7 @@ class RegistryDefinitionTestCase(TestCase):
             registry.register(MyObject)
 
 
-class AutodiscoverTestCase(TestCase):
+class AutodiscoverTestCase(unittest.TestCase):
 
     def setUp(self):
         """

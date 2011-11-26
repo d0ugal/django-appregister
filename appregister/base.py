@@ -27,7 +27,7 @@ class ClassDoesNotExist(AppRegisterException):
 class BaseRegistry(object):
 
     def __init__(self):
-        self._registry = set()
+        self.clear()
 
         if not callable(self.base):
             self.base_str = self.base
@@ -59,6 +59,12 @@ class BaseRegistry(object):
                     raise
                 continue
 
+    def is_valid(self, class_):
+        return issubclass(class_, self.get_bases())
+
+    def is_registered(self, class_):
+        return class_ in self._registry
+
     def clear(self):
         self._registry = set()
 
@@ -67,10 +73,10 @@ class Registry(BaseRegistry):
 
     def register(self, class_):
 
-        if not issubclass(class_, self.get_bases()):
+        if not self.is_valid(class_):
             raise InvalidOperation("Object '%s' is not a '%s'" % (class_, self.base))
 
-        if class_ in self._registry:
+        if self.is_registered(class_):
             raise AlreadyRegistered("Object '%s' has already been registered" % class_)
 
         self._registry.add(class_)
@@ -82,3 +88,25 @@ class Registry(BaseRegistry):
     def unregister(self, obj):
 
         self._registry.remove(obj)
+
+
+class NamedRegistry(Registry):
+
+    def __init__(self):
+        self.clear()
+
+    def clear(self):
+        self._registry = dict()
+
+    def register(self, name, class_):
+
+        if not self.is_valid(class_):
+            raise InvalidOperation("Object '%s' is not a '%s'" % (class_, self.base))
+
+        if self.is_registered(name):
+            raise AlreadyRegistered("Object '%s' has already been registered" % class_)
+
+        self._registry[name] = class_
+
+    def unregister(self, name):
+        self._registry.pop(name)
