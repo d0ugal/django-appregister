@@ -51,3 +51,10 @@ by a third party.
 
     classes = registry.all()
 
+Contents
+========
+
+.. toctree::
+ :maxdepth: 1
+
+ changelog
