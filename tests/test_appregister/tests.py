@@ -124,7 +124,7 @@ class NamedRegistryTestCase(unittest.TestCase):
     def test_basic_registry(self):
 
         from appregister import NamedRegistry
-        from appregister.base import InvalidOperation
+        from appregister.base import InvalidOperation, AlreadyRegistered
         from test_appregister.models import Question
 
         class MyRegistry(NamedRegistry):
@@ -137,6 +137,11 @@ class NamedRegistryTestCase(unittest.TestCase):
             pass
 
         registry.register('first', MyTestSubClass)
+
+        with self.assertRaises(AlreadyRegistered):
+            registry.register('first', MyTestSubClass)
+
+        registry.register('second', MyTestSubClass)
 
         class MyObject(object):
             pass
