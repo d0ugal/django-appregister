@@ -40,9 +40,6 @@ class BaseRegistry(object):
         self.base = get_callable(self.base_str)
         return self.base
 
-    def get_class(self, class_):
-        return get_callable(class_)
-
     def all(self):
         return self._registry
 
