@@ -93,9 +93,9 @@ class Registry(BaseRegistry):
         # class based decorator.
         return class_
 
-    def unregister(self, obj):
+    def unregister(self, class_):
 
-        self._registry.remove(obj)
+        self._registry.remove(class_)
 
 
 class NamedRegistry(Registry, Mapping):
