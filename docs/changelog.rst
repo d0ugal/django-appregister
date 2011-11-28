@@ -1,5 +1,6 @@
 Changelog
 =========
 
-Added an initial version of the Register and a NamedRegister - pending first
-official 0.1 release.
+v0.0.1
+
+Initial release. With a basic Register and NamedRegister and 100% test coverage.
