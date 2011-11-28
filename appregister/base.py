@@ -1,3 +1,5 @@
+from collections import Mapping, Sized, Iterable
+
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
 from django.core.urlresolvers import get_callable
@@ -24,7 +26,7 @@ class ClassDoesNotExist(AppRegisterException):
     pass
 
 
-class BaseRegistry(object):
+class BaseRegistry(Sized, Iterable):
 
     def __init__(self):
         self.clear()
@@ -32,6 +34,12 @@ class BaseRegistry(object):
         if not callable(self.base):
             self.base_str = self.base
             self.base = None
+
+    def __iter__(self):
+        return iter(self._registry)
+
+    def __len__(self):
+        return len(self._registry)
 
     def get_bases(self):
         if self.base is not None:
@@ -71,10 +79,13 @@ class Registry(BaseRegistry):
     def register(self, class_):
 
         if not self.is_valid(class_):
-            raise InvalidOperation("Object '%s' is not a '%s'" % (class_, self.base))
+            msg = "Object '%s' is not a subclass of '%s'" % (class_.__name__,
+                self.base.__name__)
+            raise InvalidOperation(msg)
 
         if self.is_registered(class_):
-            raise AlreadyRegistered("Object '%s' has already been registered" % class_)
+            msg = "Object '%s' has already been registered" % class_.__name__
+            raise AlreadyRegistered(msg)
 
         self._registry.add(class_)
 
@@ -87,7 +98,7 @@ class Registry(BaseRegistry):
         self._registry.remove(obj)
 
 
-class NamedRegistry(Registry):
+class NamedRegistry(Registry, Mapping):
 
     def __init__(self):
         self.clear()
@@ -98,12 +109,21 @@ class NamedRegistry(Registry):
     def register(self, name, class_):
 
         if not self.is_valid(class_):
-            raise InvalidOperation("Object '%s' is not a '%s'" % (class_, self.base))
+            msg = "Object '%s' is not a subclass of '%s'" % (class_.__name__,
+                self.base.__name__)
+            raise InvalidOperation(msg)
 
         if self.is_registered(name):
-            raise AlreadyRegistered("Object '%s' has already been registered" % class_)
+            msg = "Object '%s' has already been registered" % class_.__name__
+            raise AlreadyRegistered(msg)
 
         self._registry[name] = class_
 
     def unregister(self, name):
-        self._registry.pop(name)
+        del self._registry[name]
+
+    def names(self):
+        return self._registry.keys()
+
+    def __getitem__(self, key):
+        return self._registry[key]

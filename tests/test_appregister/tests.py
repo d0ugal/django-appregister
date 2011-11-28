@@ -151,6 +151,15 @@ class NamedRegistryTestCase(unittest.TestCase):
 
         registry.unregister('first')
 
+        with self.assertRaises(KeyError):
+            registry['first']
+
+        self.assertEqual(registry['second'], MyTestSubClass)
+        self.assertEqual(len(registry), 1)
+
+        for i in registry:
+            self.assertIn(i, registry.names())
+
 
 class RegistryDefinitionTestCase(unittest.TestCase):
 
