@@ -134,8 +134,5 @@ class NamedRegistry(Registry, Mapping):
     def unregister(self, name):
         del self._registry[name]
 
-    def names(self):
-        return self._registry.keys()
-
     def __getitem__(self, key):
         return self._registry[key]

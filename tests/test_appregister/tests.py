@@ -158,7 +158,7 @@ class NamedRegistryTestCase(unittest.TestCase):
         self.assertEqual(len(registry), 1)
 
         for i in registry:
-            self.assertIn(i, registry.names())
+            self.assertIn(i, registry.keys())
 
     def test_decorator_registry(self):
 
