@@ -29,7 +29,8 @@ class ClassDoesNotExist(AppRegisterException):
 class BaseRegistry(Sized, Iterable):
 
     def __init__(self):
-        self.clear()
+
+        self.setup()
 
         if not callable(self.base):
             self.base_str = self.base
@@ -70,8 +71,11 @@ class BaseRegistry(Sized, Iterable):
     def is_registered(self, class_):
         return class_ in self._registry
 
-    def clear(self):
+    def setup(self):
         self._registry = set()
+
+    def clear(self):
+        self.setup()
 
 
 class Registry(BaseRegistry):
@@ -100,10 +104,7 @@ class Registry(BaseRegistry):
 
 class NamedRegistry(Registry, Mapping):
 
-    def __init__(self):
-        self.clear()
-
-    def clear(self):
+    def setup(self):
         self._registry = dict()
 
     def register(self, name, class_=None):

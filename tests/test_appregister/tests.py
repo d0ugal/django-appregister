@@ -118,6 +118,19 @@ class RegistryProcessTestCase(unittest.TestCase):
 
         self.assertEqual(registry.all(), set([MyQuestion3, ]))
 
+    def test_clear_register(self):
+
+        from test_appregister.models import Question, registry
+
+        class MyQuestion(Question):
+            pass
+
+        registry.register(MyQuestion)
+
+        self.assertIn(MyQuestion, registry.all())
+        registry.clear()
+        self.assertNotIn(MyQuestion, registry.all())
+
 
 class NamedRegistryTestCase(unittest.TestCase):
 

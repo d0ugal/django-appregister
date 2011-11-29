@@ -1,6 +1,12 @@
 Changelog
 =========
 
+``v0.2.0``
+-----------
+
+* Added a clear and a setup method to the registry to clarify the purpose when
+  creating a new registry type subclass.
+
 ``v0.1.0``
 -----------
 
