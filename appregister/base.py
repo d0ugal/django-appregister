@@ -7,28 +7,30 @@ from django.conf import settings
 
 
 class AppRegisterException(Exception):
-    pass
-
-
-class ImproperlyConfigured(Exception):
-    pass
+    "Base exception for catching an errors raised directly by Appregister"
 
 
 class InvalidOperation(AppRegisterException):
-    pass
+    """
+    Raised when attempting to register a invalid class or object. This would be
+    if either the object is not a class, or the class does not subclass the
+    base.
+    """
 
 
 class AlreadyRegistered(AppRegisterException):
-    pass
-
-
-class ClassDoesNotExist(AppRegisterException):
-    pass
+    """
+    Raised when trying to register a class that is already registered.
+    """
 
 
 class BaseRegistry(Sized, Iterable):
 
     def __init__(self):
+        """
+        Initialise the datastore for the register and determine if the provided
+        base is a dotted path or already an object.
+        """
 
         self.setup()
 
@@ -43,6 +45,10 @@ class BaseRegistry(Sized, Iterable):
         return len(self._registry)
 
     def get_bases(self):
+        """
+        Get the base class from the dotted path, or return the base class if it
+        has already been determined.
+        """
         if self.base is not None:
             return self.base
 
@@ -50,9 +56,16 @@ class BaseRegistry(Sized, Iterable):
         return self.base
 
     def all(self):
+        """
+        Return the register data structure.
+        """
         return self._registry
 
     def autodiscover(self, module=None):
+        """
+        Import ``module`` from each of the INSTALLED_APPS defined in the
+        settings to find any registered classes.
+        """
 
         if not module:
             module = self.discovermodule
@@ -66,15 +79,28 @@ class BaseRegistry(Sized, Iterable):
                 continue
 
     def is_valid(self, class_):
+        """
+        Returns True if the class is valid for this register, otherwise False
+        is returned.
+        """
         return issubclass(class_, self.get_bases())
 
     def is_registered(self, class_):
+        """
+        Return True is the class is already registered. Otherwise return False
+        """
         return class_ in self._registry
 
     def setup(self):
+        """
+        Initialise the registry data structure.
+        """
         self._registry = set()
 
     def clear(self):
+        """
+        Reset the registry by remvoing all items/re-creating the data structure.
+        """
         self.setup()
 
 
@@ -102,7 +128,7 @@ class Registry(BaseRegistry):
         self._registry.remove(class_)
 
 
-class NamedRegistry(Registry, Mapping):
+class NamedRegistry(BaseRegistry, Mapping):
 
     def setup(self):
         self._registry = dict()
