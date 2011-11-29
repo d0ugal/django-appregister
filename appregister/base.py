@@ -106,18 +106,30 @@ class NamedRegistry(Registry, Mapping):
     def clear(self):
         self._registry = dict()
 
-    def register(self, name, class_):
+    def register(self, name, class_=None):
+
+        if self.is_registered(name):
+            msg = "Object '%s' has already been registered" % class_.__name__
+            raise AlreadyRegistered(msg)
+
+        # If only name is provided, return a callable that accepts only the
+        # class instance, this adds support for decorator registration on named
+        # registries.
+        if not class_:
+            def inner(class_):
+                return self.register(name, class_)
+            return inner
 
         if not self.is_valid(class_):
             msg = "Object '%s' is not a subclass of '%s'" % (class_.__name__,
                 self.base.__name__)
             raise InvalidOperation(msg)
 
-        if self.is_registered(name):
-            msg = "Object '%s' has already been registered" % class_.__name__
-            raise AlreadyRegistered(msg)
-
         self._registry[name] = class_
+
+        # Return the original class to allow this method to be used as a
+        # class based decorator.
+        return class_
 
     def unregister(self, name):
         del self._registry[name]

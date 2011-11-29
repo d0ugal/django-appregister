@@ -160,6 +160,24 @@ class NamedRegistryTestCase(unittest.TestCase):
         for i in registry:
             self.assertIn(i, registry.names())
 
+    def test_decorator_registry(self):
+
+        from appregister import NamedRegistry
+        from test_appregister.models import Question
+
+        class MyRegistry(NamedRegistry):
+            base = Question
+
+        registry = MyRegistry()
+
+        @registry.register('first')
+        class MyTestSubClass(Question):
+            pass
+
+        MyTestSubClass()
+
+        self.assertIn(MyTestSubClass, registry.values())
+
 
 class RegistryDefinitionTestCase(unittest.TestCase):
 
