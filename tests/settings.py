@@ -23,7 +23,6 @@ TEMPLATE_DIRS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'appregister.URLMiddleware',
 )
 
 ROOT_URLCONF = 'test_appregister.urls'
