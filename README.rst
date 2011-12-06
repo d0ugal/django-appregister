@@ -12,13 +12,13 @@ Usage Example
 
 In ``myapp/registry.py``::
 
-    from appregister import Register
+    from appregister import Registry
 
-    class QuestionRegister(Register):
+    class QuestionRegistry(Registry):
         base = 'myapp.models.Question'
         discovermodule = 'questions'
 
-    questions = QuestionRegister()
+    questions = QuestionRegistry()
 
 
 if ``myapp/models.py``::

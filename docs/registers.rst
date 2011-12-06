@@ -1,28 +1,28 @@
-Register Reference Guide
+Registry Reference Guide
 ========================
 
-Appregister comes with two different build in Registries, Register and
-NamedRegister.
+Appregister comes with two different build in Registries, Registry and
+NamedRegistry.
 
 
-Register
+Registry
 ----------------------------------------
 
-The `Register` class is the simplest registry, for storing a set of unique
-subclasses. A Register can be defined like so::
+The `Registry` class is the simplest registry, for storing a set of unique
+subclasses. A Registry can be defined like so::
 
-    from appregister import Register
+    from appregister import Registry
 
-    class QuestionRegister(Register):
+    class QuestionRegistry(Registry):
         base = 'myproject.Question'
         discovermodule = 'questions'
 
-    questions = QuestionRegister()
+    questions = QuestionRegistry()
 
 Reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Register class implements the Sized and Iterable ABC's from the collections
+The Registry class implements the Sized and Iterable ABC's from the collections
 module and adds the following methods.
 
 ``all``
@@ -55,7 +55,7 @@ module and adds the following methods.
 Usage Example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following example assumes that the QuestionRegister that is defined above
+The following example assumes that the QuestionRegistry that is defined above
 is added to the file ``registry.py`` in your myproject package::
 
     from myproject import registry
@@ -76,29 +76,29 @@ is added to the file ``registry.py`` in your myproject package::
 
 
 
-NamedRegister
+NamedRegistry
 ----------------------------------------
 
-The named register includes all of the functionality of the Register class but
+The named register includes all of the functionality of the Registry class but
 extended to require a name (or key) for each registered subclass. The
-NamedRegister also doesn't require registered classes to be unique, other than
+NamedRegistry also doesn't require registered classes to be unique, other than
 a key can only be registered once.
 
-The ``NamedRegister`` does not require any further steps than ``Register`` when
+The ``NamedRegistry`` does not require any further steps than ``Registry`` when
 defining your class register, so it can be defined like so::
 
-    from appregister import NamedRegister
+    from appregister import NamedRegistry
 
-    class NamedQuestionRegister(NamedRegister):
+    class NamedQuestionRegistry(NamedRegistry):
         base = 'myproject.Question'
         discovermodule = 'questions'
 
-    named_questions = NamedQuestionRegister()
+    named_questions = NamedQuestionRegistry()
 
 Reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Register class implements the Mapping ABC from the collections module, so it
+The Registry class implements the Mapping ABC from the collections module, so it
 can be used like a dict and it also adds/changes the following methods.
 
 ``all``
@@ -125,8 +125,8 @@ can be used like a dict and it also adds/changes the following methods.
 Usage Example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following example like with the Register example assumes that the
-NamedQuestionRegister is added to the file ``registry.py`` in your
+The following example like with the Registry example assumes that the
+NamedQuestionRegistry is added to the file ``registry.py`` in your
 myproject package::
 
     from myproject import registry
