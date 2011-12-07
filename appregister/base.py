@@ -117,6 +117,9 @@ class BaseRegistry(Sized, Iterable):
         """
         self.setup()
 
+    def __repr__(self):
+        return '<%s: %s members>' % (self.__class__.__name__, len(self))
+
 
 class Registry(BaseRegistry):
     """

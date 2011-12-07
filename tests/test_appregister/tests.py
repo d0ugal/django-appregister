@@ -131,6 +131,12 @@ class RegistryProcessTestCase(unittest.TestCase):
         registry.clear()
         self.assertNotIn(MyQuestion, registry.all())
 
+    def test_repr(self):
+
+        from test_appregister.models import registry
+
+        self.assertEqual(repr(registry), '<QuestionRegistry: 0 members>')
+
 
 class NamedRegistryTestCase(unittest.TestCase):
 
