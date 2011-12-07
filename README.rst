@@ -1,55 +1,90 @@
-Django Appregister
+Django appregister
 ========================================
 
-Django Appregister is a class registry system to allow you to easily implement
-a puggable
+Django appregister is a building blocks app to implement a class registry
+system for your django app. It uses a similar approach to the Django admin,
+allowing you to register classes and supports an autodiscover feature.
 
-See http://appregister.readthedocs.org/ for further documentation.
-
-
-Usage Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In ``myapp/registry.py``::
-
-    from appregister import Registry
-
-    class QuestionRegistry(Registry):
-        base = 'myapp.models.Question'
-        discovermodule = 'questions'
-
-    questions = QuestionRegistry()
+A register based system provides a good base for making an app plugable and
+extendable by third parties as they can register their own subclasses and your
+code is able to use them.
 
 
-if ``myapp/models.py``::
+Installation
+========================================
 
-    from django.db import models
-    from myapp import registry
+Use pip::
 
-    class Question(models.Model):
-        pass
-
-    @registry.questions.register
-    class MultipleChoiceQuestion(Question):
-        pass
+    pip install django-appregister
 
 
-You can then access all classes that have been registered by your app or by
-another app that extends it::
+Quick Example Usage
+========================================
 
-    from myapp import registry
+First, you should create your base class that all registered classes must be a
+subclass of. Often this is a base Model class in your models.py or it can be
+anywhere in your project::
 
-    classes = registry.questions.all()
+    >>> class AppPlugin(object):
+    ...     pass
 
-If you add the following lines to your urls.py, you can autodiscover all
-question sublclasses that have been added to any of the apps in your
-INSTALLED_APPS::
+Then you need to create your own registry, the base can either be a class, or a
+dotted string that points to the base class, such as ``"myapp.AppPlugin"``.
+After that, you can go ahead and create an instance of the registry - creating
+it at the module level makes it easy to re-use across the project but you can
+have as many instances as you need. It's good practice to create your registry
+in its own module, such as ``myapp/register.py``::
 
-    from myapp import registry
+    >>> from appregister import Registry
 
-    registry.questions.autodiscover()
+    >>> class MyRegistry(Registry):
+    ...     base = AppPlugin
+    ...     discovermodule = 'plugins'
 
-This then allows developers to add their own subclasses to ``questions.py``
-within their apps and have them registered to the system for use, in a similar
-way to the addition and registration of ModelAdmins in ``admin.py`` files for
-Django's admin.
+    >>> plugins = MyRegistry()
+
+Now that you have the registry, you can start to add subclasses to it. This can
+be done by using the class decorator on your register::
+
+    >>> @plugins.register
+    ... class MyPlugin(AppPlugin):
+    ...     pass
+
+Note, If you are using version 2.5 or below of Python you can't use the class
+based decorator, you will need to call it manually. The above example would
+then become::
+
+    >>> class MySecondPlugin(AppPlugin):
+    ...     pass
+    >>> plugins.register(MySecondPlugin)
+    <class 'MySecondPlugin'>
+
+Registering an invalid object will raise an InvalidOperation exception::
+
+    >>> # Note that this class does not inherit from the base we specified.
+    >>> class MyNonSubclass(object):
+    ...     pass
+
+    >>> plugins.register(MyNonSubclass)
+    Traceback (most recent call last):
+        ...
+    InvalidOperation: Object 'MyNonSubclass' is not a subclass of 'AppPlugin'
+
+Finally, now you can get all your objects back - this includes those registered
+by a third party::
+
+    >>> len(plugins)
+    2
+
+    >>> for plugin in plugins:
+    ...     print plugin
+    <class 'MySecondPlugin'>
+    <class 'MyPlugin'>
+
+The order of registration is not stored. Since we can't tell what order they
+would be registered, if you want a sorted set you will need to sort them
+after they have all been registered::
+
+    >>> plugins.clear()
+    >>> len(plugins)
+    0

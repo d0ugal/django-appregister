@@ -115,6 +115,3 @@ by a third party.
     >>> plugins.clear()
     >>> len(plugins)
     0
-
-.. automodule:: appregister
-   :members:
