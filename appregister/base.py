@@ -37,6 +37,7 @@ class BaseRegistry(Sized, Iterable):
         if not callable(self.base):
             self.base_str = self.base
             self.base = None
+            self.get_bases()
 
     def __iter__(self):
         return iter(self._registry)
