@@ -26,3 +26,5 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'test_appregister.urls'
+
+SECRET_KEY = "test"
