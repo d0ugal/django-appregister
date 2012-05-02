@@ -5,10 +5,9 @@ Django appregister is a building blocks app to implement a class registry
 system for your django app. It uses a similar approach to the Django admin,
 allowing you to register classes and supports an autodiscover feature.
 
-A register based system provides a good base for making an app plugable and
-extendable by third parties as they can register their own subclasses and your
-code is able to use them.
-
+A registry system that provides a good base for making an app plugable and
+extendable by third parties as they can register their own subclasses for
+Use within the main code base.
 
 Installation
 ========================================
