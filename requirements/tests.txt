@@ -1,6 +1,5 @@
--r requirements.txt
+-r install.txt
 coverage
-django
 mock
 tox
 nose
