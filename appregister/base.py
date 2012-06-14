@@ -59,17 +59,17 @@ class BaseRegistry(Sized, Iterable):
     def all(self):
         """
         Accepts no arguements and returns the datastructure that containins all
-        of the registered subclases. The datastructure used should be defined in
-        the subclasses ``setup`` method.
+        of the registered subclases. The datastructure used should be defined
+        in the subclasses ``setup`` method.
         """
         return self._registry
 
     def autodiscover(self, module=None):
         """
-        Accepts either no arguements or the name of the module to check. It then
-        looks at each of the ``INSTALLED_APPS`` for the given module name or
-        with the same named as ``discovermodule`` to find any registered
-        subclasses.
+        Accepts either no arguements or the name of the module to check. It
+        then looks at each of the ``INSTALLED_APPS`` for the given module
+        name or with the same named as ``discovermodule`` to find any
+        registered subclasses.
         """
 
         if not module:
@@ -104,16 +104,16 @@ class BaseRegistry(Sized, Iterable):
         """
         Initialise the registry data structure. This should set
         ``self._registry`` with the datastructure that will store registeed
-        classes. This could be anything from a list to a dict or your own custom
-        structure.
+        classes. This could be anything from a list to a dict or your own
+        custom data structure.
         """
         self._registry = set()
 
     def clear(self):
         """
-        Accepts no arguements and resets the registry and removes any previously
-        registered classes. By default this calls the ``setup`` method to
-        re-initialise the register.
+        Accepts no arguements and resets the registry and removes any
+        previously registered classes. By default this calls the ``setup``
+        method to re-initialise the register.
         """
         self.setup()
 
