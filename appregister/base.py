@@ -129,6 +129,18 @@ class Registry(BaseRegistry):
     following methods.
     """
 
+    def add_class(self, class_):
+        """
+        A simple method we can override when using custom datastructures
+        """
+        self._registry.add(class_)
+
+    def remove_class(self, class_):
+        """
+        A simple method we can override when using custom datastructures
+        """
+        self._registry.remove(class_)
+
     def register(self, class_):
         """
         Accepts ``class_``, a class object that must extend ``base``. The
@@ -161,7 +173,7 @@ class Registry(BaseRegistry):
             msg = "Object '%s' has already been registered" % class_.__name__
             raise AlreadyRegistered(msg)
 
-        self._registry.add(class_)
+        self.add_class(class_)
 
         # Return the original class to allow this method to be used as a
         # class based decorator.
@@ -173,7 +185,7 @@ class Registry(BaseRegistry):
         the class is not registered a ``KeyError`` is raised.
         """
 
-        self._registry.remove(class_)
+        self.remove_class(class_)
 
 
 class NamedRegistry(BaseRegistry, Mapping):
@@ -244,3 +256,24 @@ class NamedRegistry(BaseRegistry, Mapping):
 
     def __getitem__(self, key):
         return self._registry[key]
+
+
+class SortedRegistry(Registry):
+    """
+    Allows for a sorted registry by using a list instead of a set().
+    """
+
+    def setup(self):
+        """
+        Override the setup method so that we can use a ``list()`` instead of
+        the default ``set()``
+        """
+        self._registry = list()
+
+    def add_class(self, class_):
+        """
+        Since we are using a ``list`` instead of a ``set``, we need to
+        override this method to add ``class_`` to our list.
+        """
+        self._registry.append(class_)
+
