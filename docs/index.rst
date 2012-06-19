@@ -53,9 +53,9 @@ register will look in ``myblog.plugins`` for registered classes.
 
 .. doctest::
 
-    >>> from appregister import Registry
+    >>> from appregister import SortedRegistry
 
-    >>> class MyRegistry(Registry):
+    >>> class MyRegistry(SortedRegistry):
     ...     base = AppPlugin
     ...     discovermodule = 'plugins'
 
@@ -122,8 +122,8 @@ by a third party.
 
     >>> for plugin in plugins:
     ...     print plugin
-    <class 'MySecondPlugin'>
     <class 'MyPlugin'>
+    <class 'MySecondPlugin'>
 
 .. note::
 
