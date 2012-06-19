@@ -30,21 +30,26 @@ Use pip::
 Quick Example Usage
 ========================================
 
-First, you should create your base class that all registered classes must be a
-subclass of. Often this is a base Model class in your models.py or it can be
-anywhere in your project.
+First, you should create your base class that all registered classes will be a
+subclass of. Often this is a base Model class in your models.py but it can be
+any python class anywhere in your project.
 
 .. doctest::
 
     >>> class AppPlugin(object):
     ...     pass
 
-Then you need to create your own registry, the base can either be a class, or a
-dotted string that points to the base class, such as ``"myapp.AppPlugin"``.
-After that, you can go ahead and create an instance of the registry - creating
-it at the module level makes it easy to re-use across the project but you can
-have as many instances as you need. It's good practice to create your registry
-in its own module, such as ``myapp/register.py``.
+You then need to declare your register. It only had one required property;
+``base``. The base can either be a class object, or a dotted string to the
+class, such as ``"myapp.AppPlugin"``.
+
+The other most common property is the ``discovermodule`` property. This
+provides a way to automatically discover subclasses within a project. You can
+choose any name here that would make a valid Python package name and then
+appregister will look through the ``INSTALLED_APPS`` in your Django settings
+and find registered items. For example, if you use the discovermodule value
+``plugins`` and have the app ``myblog`` in your installed apps, then app
+register will look in ``myblog.plugins`` for registered classes.
 
 .. doctest::
 
@@ -54,7 +59,23 @@ in its own module, such as ``myapp/register.py``.
     ...     base = AppPlugin
     ...     discovermodule = 'plugins'
 
+After that, you can go ahead and create an instance of the registry -
+creating it at the module level makes it easy to re-use across the project
+(but you can have as many instances as you need). It's good practice to
+create your registry in its own module, such as ``myapp/register.py``.
+
+.. doctest::
+
     >>> plugins = MyRegistry()
+
+Now that we have the registry, if you want to use the autodiscover feature
+you will need to add the following line in your base urls.py. Exactly like you
+do for the Django admin. Import the registry instance from where you stored
+it and then call autodiscover.
+
+.. doctest::
+
+    >>> plugins.autodiscover()
 
 Now that you have the registry, you can start to add subclasses to it. This can
 be done by using the class decorator on your register.
