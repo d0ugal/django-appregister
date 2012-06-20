@@ -30,5 +30,5 @@ setup(
     tests_require=test_requirements,
     packages=find_packages(exclude=('tests', 'docs')),
     zip_safe=False,
-    install_requires=requirements
+    install_requires=requirements + ['django', ]
 )
