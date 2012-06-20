@@ -25,10 +25,11 @@ setup(
     author_email='dougal85@gmail.com',
     setup_requires=[
         'versiontools >= 1.6',
+        'django'
     ],
     test_suite="runtests.runtests",
     tests_require=test_requirements,
     packages=find_packages(exclude=('tests', 'docs')),
     zip_safe=False,
-    install_requires=requirements + ['django', ]
+    install_requires=requirements
 )
