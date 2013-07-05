@@ -17,7 +17,7 @@ with open('requirements/test.txt') as f:
 setup(
     name="django-appregister",
     version=":versiontools:appregister:",
-    url='http://appregsiter.readthedocs.org/',
+    url='http://appregister.readthedocs.org/',
     license=license,
     description="A Django app that provides the building blocks for an app registry system",
     long_description=readme,
