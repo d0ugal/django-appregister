@@ -9,3 +9,5 @@ MANIFEST
 *.egg
 Vagrantfile
 tests/.tox/
+.ropeproject
+
