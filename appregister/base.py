@@ -276,4 +276,3 @@ class SortedRegistry(Registry):
         override this method to add ``class_`` to our list.
         """
         self._registry.append(class_)
-

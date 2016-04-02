@@ -198,6 +198,61 @@ class NamedRegistryTestCase(unittest.TestCase):
         self.assertIn(MyTestSubClass, registry.values())
 
 
+class SortedRegistryTestCase(unittest.TestCase):
+
+    def test_basic_registry(self):
+
+        from appregister import SortedRegistry
+        from appregister.base import InvalidOperation, AlreadyRegistered
+        from test_appregister.models import Question
+
+        class MyRegistry(SortedRegistry):
+            base = Question
+
+        registry = MyRegistry()
+
+        # Test the registry allows a valid registration and block an invalid.
+        class MyTestSubClass(Question):
+            pass
+
+        registry.register(MyTestSubClass)
+
+        with self.assertRaises(AlreadyRegistered):
+            registry.register(MyTestSubClass)
+
+        class MyObject(object):
+            pass
+
+        with self.assertRaises(InvalidOperation):
+            registry.register(MyObject)
+
+        self.assertIn(MyTestSubClass, registry)
+
+        registry.unregister(MyTestSubClass)
+
+        self.assertNotIn(MyTestSubClass, registry)
+
+        self.assertEqual(len(registry), 0)
+
+    def test_decorator_registry(self):
+
+        from appregister import NamedRegistry
+        from test_appregister.models import Question
+
+        class MyRegistry(NamedRegistry):
+            base = Question
+
+        registry = MyRegistry()
+
+        @registry.register('first')
+        class MyTestSubClass(Question):
+            pass
+
+        MyTestSubClass()
+
+        self.assertIn(MyTestSubClass, registry.values())
+
+
 class RegistryDefinitionTestCase(unittest.TestCase):
 
     def setUp(self):

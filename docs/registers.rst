@@ -1,9 +1,10 @@
 Registry Reference Guide
 ========================
 
-Appregister comes with a BaseRegistry and two built in implementations of the
-registry; Registry and NamedRegistry. These are similar but store the registered
-items in a noticibly different way.
+Appregister comes with a BaseRegistry and three built in implementations of
+the registry; ``Registry``, ``NamedRegistry`` and ``SortedRegistry``. These
+are similar but store the registered items in a noticibly different way. Each
+of these will be discussed below.
 
 .. testsetup:: *
 
@@ -55,6 +56,8 @@ Reference
 
     .. automethod:: register
     .. automethod:: unregister
+    .. automethod:: add_class
+    .. automethod:: remove_class
 
 
 Usage Example
@@ -159,4 +162,68 @@ myproject package
     True
     >>> named_questions.clear()
     >>> named_questions.is_registered("Multiple Choice")
+    False
+
+
+SortedRegistry
+----------------------------------------
+
+The `SortedRegistry` class is a simple extension on the base ``Registry``
+that persists the order which classes are registered.
+
+.. doctest::
+
+    >>> from appregister import SortedRegistry
+
+    >>> class SortedQuestionRegistry(SortedRegistry):
+    ...     base = Question
+    ...     discovermodule = 'questions'
+
+    >>> questions = SortedQuestionRegistry()
+
+Reference
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: SortedRegistry
+
+    .. automethod:: register
+    .. automethod:: unregister
+
+
+Usage Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following example assumes that the QuestionRegistry that is defined above
+is added to the file ``registry.py`` in your myproject package.
+
+.. doctest::
+
+    >>> # re-initialise the Registry.
+    >>> questions.setup()
+
+    >>> questions.all()
+    []
+
+    >>> @questions.register
+    ... class MultipleChoiceQuestion(Question):
+    ...     pass
+
+    >>> @questions.register
+    ... class BooleanQuestion(Question):
+    ...     pass
+
+    >>> questions.all()
+    [<class 'MultipleChoiceQuestion'>, <class 'BooleanQuestion'>]
+
+    >>> # Trigger the autodiscover to find all the third party subclasses
+    >>> questions.autodiscover()
+
+    >>> questions.is_valid(MultipleChoiceQuestion)
+    True
+    >>> questions.is_valid(object)
+    False
+    >>> questions.is_registered(MultipleChoiceQuestion)
+    True
+    >>> questions.clear()
+    >>> questions.is_registered(MultipleChoiceQuestion)
     False
